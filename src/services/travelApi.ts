@@ -9,7 +9,17 @@ type ApiResponse<T> = {
   };
 };
 
-const baseUrl: string = (import.meta as any).env?.VITE_API_BASE_URL ?? "";
+// 根据环境确定 API 基础 URL
+const getBaseUrl = (): string => {
+  // 生产环境使用相对路径（同域）
+  if (import.meta.env.PROD) {
+    return '';
+  }
+  // 开发环境使用配置的地址
+  return (import.meta as any).env?.VITE_API_BASE_URL ?? '';
+};
+
+const baseUrl: string = getBaseUrl();
 
 async function apiPost<T>(path: string, body: unknown): Promise<T> {
   const url = `${baseUrl}${path}`;
