@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 清新自然高级色调 */
+    --background: 150 20% 97%;
+    --foreground: 160 25% 15%;
+    --card: 150 15% 99%;
+    --card-foreground: 160 25% 15%;
+    --popover: 150 15% 99%;
+    --popover-foreground: 160 25% 15%;
+    --primary: 160 45% 28%;
+    --primary-foreground: 150 20% 97%;
+    --secondary: 150 20% 94%;
+    --secondary-foreground: 160 25% 15%;
+    --muted: 150 15% 92%;
+    --muted-foreground: 160 15% 45%;
+    --accent: 180 40% 45%;
+    --accent-foreground: 150 20% 97%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 160 45% 28%;
+    --radius: 0.75rem;
+    
+    /* 自定义自然色系 */
+    --forest: 160 45% 28%;
+    --sage: 150 25% 65%;
+    --mint: 160 40% 85%;
+    --sky: 195 60% 75%;
+    --sand: 45 25% 92%;
+    --cream: 45 30% 97%;
+    --coral: 15 75% 65%;
+    --ocean: 200 55% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+}
+
+@layer utilities {
+  /* 渐变背景 */
+  .bg-gradient-nature {
+    background: linear-gradient(135deg, hsl(var(--cream)) 0%, hsl(var(--mint) / 0.3) 50%, hsl(var(--sky) / 0.2) 100%);
+  }
+  
+  .bg-gradient-hero {
+    background: linear-gradient(180deg, hsl(var(--cream)) 0%, hsl(var(--mint) / 0.4) 40%, hsl(var(--sky) / 0.3) 100%);
+  }
+  
+  /* 玻璃拟态效果 */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .glass-dark {
+    background: rgba(20, 40, 35, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* 柔和阴影 */
+  .shadow-soft {
+    box-shadow: 0 4px 20px -4px rgba(45, 90, 74, 0.15), 0 8px 40px -8px rgba(45, 90, 74, 0.1);
+  }
+  
+  .shadow-float {
+    box-shadow: 0 8px 30px -6px rgba(45, 90, 74, 0.2), 0 16px 60px -12px rgba(45, 90, 74, 0.12);
+  }
+  
+  /* 文字渐变 */
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--forest)) 0%, hsl(var(--ocean)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* 悬停效果 */
+  .hover-lift {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px -8px rgba(45, 90, 74, 0.25);
+  }
+  
+  /* 动画 */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  .animate-pulse-soft {
+    animation: pulse-soft 3s ease-in-out infinite;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+  
+  /* 装饰性元素 */
+  .leaf-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c-5 10-15 15-15 25 0 8 7 15 15 15s15-7 15-15c0-10-10-15-15-25z' fill='%232D5A4A' fill-opacity='0.03'/%3E%3C/svg%3E");
+  }
+  
+  /* 按钮样式 */
+  .btn-primary {
+    @apply px-6 py-3 bg-[hsl(var(--forest))] text-white rounded-xl font-medium transition-all duration-300;
+    @apply hover:bg-[hsl(160,45%,23%)] hover:shadow-lg hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-white/80 text-[hsl(var(--forest))] rounded-xl font-medium border border-[hsl(var(--forest))/20] transition-all duration-300;
+    @apply hover:bg-white hover:shadow-lg hover:-translate-y-0.5;
+  }
+  
+  .btn-ghost {
+    @apply px-6 py-3 text-[hsl(var(--forest))] rounded-xl font-medium transition-all duration-300;
+    @apply hover:bg-[hsl(var(--mint))];
+  }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--mint) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--sage));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--forest));
+}
+
+/* 选择文本样式 */
+::selection {
+  background: hsl(var(--mint));
+  color: hsl(var(--forest));
+}
