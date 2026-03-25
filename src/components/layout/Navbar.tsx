@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Compass, Palette, ArrowLeftRight, Menu, X } from 'lucide-react';
+import { MapPin, Compass, Palette, ArrowLeftRight, Menu, X, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavbarProps {
   currentPage: string;
@@ -10,6 +12,8 @@ interface NavbarProps {
 export function Navbar({ currentPage, onPageChange }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,8 +78,26 @@ export function Navbar({ currentPage, onPageChange }: NavbarProps) {
             })}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* CTA Button & Auth */}
+          <div className="hidden md:flex items-center gap-3">
+            {user && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={() => onPageChange('favorites')}
+              >
+                <Heart className="w-5 h-5" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsAuthOpen(true)}
+            >
+              <User className="w-5 h-5" />
+            </Button>
+            
             <Button
               onClick={() => onPageChange('recommend')}
               className="btn-primary"
@@ -132,10 +154,44 @@ export function Navbar({ currentPage, onPageChange }: NavbarProps) {
               >
                 开始探索
               </Button>
+              
+              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[hsl(150,15%,88%)]">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setIsAuthOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  {user ? '用户中心' : '登录'}
+                </Button>
+                {user && (
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      onPageChange('favorites');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <Heart className="w-4 h-4 mr-2" />
+                    收藏
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         )}
       </div>
+      
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        user={user}
+        onAuthChange={() => window.location.reload()}
+      />
     </nav>
   );
 }
