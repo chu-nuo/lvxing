@@ -113,21 +113,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
             </button>
           </div>
 
-          {/* 统计数据 */}
-          <div className="mt-20 grid grid-cols-3 gap-8 max-w-lg mx-auto animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-[hsl(160,45%,28%)]">10K+</div>
-              <div className="text-sm text-[hsl(160,15%,45%)] mt-1">目的地</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-[hsl(160,45%,28%)]">50K+</div>
-              <div className="text-sm text-[hsl(160,15%,45%)] mt-1">用户</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-[hsl(160,45%,28%)]">98%</div>
-              <div className="text-sm text-[hsl(160,15%,45%)] mt-1">满意度</div>
-            </div>
-          </div>
+
         </div>
 
         {/* 底部渐变 */}
