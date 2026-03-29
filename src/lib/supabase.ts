@@ -3,7 +3,20 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// ⚠️ 环境变量检查：开发/生产时如果凭证缺失，应尽早暴露问题而非静默失败
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn(
+    '[TravelAI] Supabase 环境变量未配置！\n' +
+    '  VITE_SUPABASE_URL 或 VITE_SUPABASE_ANON_KEY 为空\n' +
+    '  登录/收藏功能将不可用\n' +
+    '  请检查 .env 文件或 Vercel 环境变量配置'
+  );
+}
+
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key'
+);
 
 // 用户类型
 export type User = {

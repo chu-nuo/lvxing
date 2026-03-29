@@ -9,17 +9,9 @@ type ApiResponse<T> = {
   };
 };
 
-// 根据环境确定 API 基础 URL
-const getBaseUrl = (): string => {
-  // 生产环境使用相对路径（同域）
-  if (import.meta.env.PROD) {
-    return '';
-  }
-  // 开发环境使用配置的地址
-  return (import.meta as any).env?.VITE_API_BASE_URL ?? '';
-};
-
-const baseUrl: string = getBaseUrl();
+// 支持开发环境 localhost 和生产环境自定义域名
+// Vite 会自动用 VITE_API_BASE_URL 替换变量（注意 Vercel 部署时需在环境变量中配置）
+const baseUrl: string = (import.meta as any).env?.VITE_API_BASE_URL ?? "";
 
 async function apiPost<T>(path: string, body: unknown): Promise<T> {
   const url = `${baseUrl}${path}`;

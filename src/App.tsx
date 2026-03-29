@@ -10,6 +10,7 @@ import { DicePage } from '@/pages/DicePage';
 import { PhotoChallengePage } from '@/pages/PhotoChallengePage';
 import { PuzzlePage } from '@/pages/PuzzlePage';
 import { ReversePage } from '@/pages/ReversePage';
+import { FavoritesPage } from '@/pages/FavoritesPage';
 import { Toaster } from '@/components/ui/sonner';
 
 export default function App() {
@@ -37,6 +38,8 @@ export default function App() {
         return <PuzzlePage onPageChange={setCurrentPage} />;
       case 'reverse':
         return <ReversePage onPageChange={setCurrentPage} />;
+      case 'favorites':
+        return <FavoritesPage onPageChange={setCurrentPage} />;
       default:
         return <HomePage onPageChange={setCurrentPage} />;
     }

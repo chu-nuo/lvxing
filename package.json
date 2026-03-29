@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:all": "cd server && npm install && npm run build && cd .. && npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "vercel-build": "npm run build"
+    "vercel-build": "npm run build:all"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
