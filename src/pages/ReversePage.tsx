@@ -1,46 +1,18 @@
 import { useState } from 'react';
-import { ArrowLeftRight, ArrowLeft, Users, Sparkles, Search, Check } from 'lucide-react';
+import { ArrowLeftRight, ArrowLeft, Users, Sparkles, Search, Check, AlertCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { reverse as reverseApi } from '@/services/travelApi';
+import { reverse as reverseApi, planner as plannerApi } from '@/services/travelApi';
 
 interface ReversePageProps {
   onPageChange: (page: string) => void;
 }
 
 const reverseDestinations = [
-  {
-    popular: '三亚',
-    alternative: '万宁',
-    reason: '同样碧海蓝天，人少一半',
-    reverseIndex: 92,
-    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80',
-    highlights: ['石梅湾', '日月湾', '兴隆热带植物园'],
-  },
-  {
-    popular: '丽江',
-    alternative: '沙溪古镇',
-    reason: '同样的纳西风情，更原生态',
-    reverseIndex: 88,
-    image: 'https://images.unsplash.com/photo-1527684651001-731c474bbb5a?w=800&q=80',
-    highlights: ['寺登街', '古戏台', '玉津桥'],
-  },
-  {
-    popular: '西安',
-    alternative: '洛阳',
-    reason: '同样的古都底蕴，不挤',
-    reverseIndex: 85,
-    image: 'https://images.unsplash.com/photo-1564596823821-79b0dead95f3?w=800&q=80',
-    highlights: ['龙门石窟', '白马寺', '洛邑古城'],
-  },
-  {
-    popular: '厦门',
-    alternative: '泉州',
-    reason: '同样的闽南文化，更地道',
-    reverseIndex: 90,
-    image: 'https://images.unsplash.com/photo-1598890777032-bde83547de50?w=800&q=80',
-    highlights: ['开元寺', '西街', '清源山'],
-  },
+  { popular: '三亚', alternative: '万宁', reason: '同样碧海蓝天，人少一半', reverseIndex: 92, image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80', highlights: ['石梅湾', '日月湾', '兴隆热带植物园'] },
+  { popular: '丽江', alternative: '沙溪古镇', reason: '同样的纳西风情，更原生态', reverseIndex: 88, image: 'https://images.unsplash.com/photo-1527684651001-731c474bbb5a?w=800&q=80', highlights: ['寺登街', '古戏台', '玉津桥'] },
+  { popular: '西安', alternative: '洛阳', reason: '同样的古都底蕴，不挤', reverseIndex: 85, image: 'https://images.unsplash.com/photo-1564596823821-79b0dead95f3?w=800&q=80', highlights: ['龙门石窟', '白马寺', '洛邑古城'] },
+  { popular: '厦门', alternative: '泉州', reason: '同样的闽南文化，更地道', reverseIndex: 90, image: 'https://images.unsplash.com/photo-1598890777032-bde83547de50?w=800&q=80', highlights: ['开元寺', '西街', '清源山'] },
 ];
 
 const getReverseIndexColor = (index: number) => {
@@ -59,47 +31,103 @@ const getReverseIndexLabel = (index: number) => {
 
 type ReverseDestinationUI = (typeof reverseDestinations)[number];
 
-export function ReversePage({ onPageChange }: ReversePageProps) {
+export function ReversePage(_props: ReversePageProps) {
   const [preferences, setPreferences] = useState<string[]>([]);
   const [crowdTolerance, setCrowdTolerance] = useState(50);
   const [showResults, setShowResults] = useState(false);
   const [alternatives, setAlternatives] = useState<ReverseDestinationUI[]>([]);
+  const [apiError, setApiError] = useState<string>('');
+  const [planningDest, setPlanningDest] = useState<string>('');
+  const [planningResult, setPlanningResult] = useState<string>('');
+  const [planningLoading, setPlanningLoading] = useState(false);
+  const [planningError, setPlanningError] = useState<string>('');
+  const [step, setStep] = useState<'results' | 'planning'>('results');
 
   const preferenceOptions = ['自然风光', '历史文化', '美食探索', '休闲度假', '户外探险', '城市漫步'];
 
   const togglePreference = (pref: string) => {
-    setPreferences(prev =>
-      prev.includes(pref)
-        ? prev.filter(p => p !== pref)
-        : [...prev, pref]
-    );
+    setPreferences(prev => prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref]);
   };
 
   const handleSearch = async () => {
+    setApiError('');
     try {
-      const data = await reverseApi({
-        preferences,
-        crowdTolerance,
-        peopleCount: 2,
-        travelDate: new Date().toISOString().slice(0, 10),
-      });
+      const data = await reverseApi({ preferences, crowdTolerance, peopleCount: 2, travelDate: new Date().toISOString().slice(0, 10) });
       setAlternatives(data?.alternatives ?? []);
       setShowResults(true);
-    } catch {
+      setStep('results');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '请求失败，请检查AI服务配置';
+      setApiError(msg);
       setAlternatives([]);
       setShowResults(true);
+      setStep('results');
     }
   };
+
+  const handleDirectPlan = async (destName: string) => {
+    setPlanningDest(destName);
+    setPlanningLoading(true);
+    setPlanningError('');
+    setPlanningResult('');
+    setStep('planning');
+    try {
+      const res = await plannerApi({ destination: destName });
+      setPlanningResult(typeof res === 'string' ? res : JSON.stringify(res, null, 2));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '规划生成失败，请稍后重试';
+      setPlanningError(msg);
+    } finally {
+      setPlanningLoading(false);
+    }
+  };
+
+  // 规划结果视图
+  if (step === 'planning') {
+    return (
+      <div className="min-h-screen bg-gradient-nature pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={() => setStep('results')} className="p-2 rounded-xl hover:bg-white/50 transition-colors">
+              <ArrowLeft className="w-6 h-6 text-[hsl(160,25%,15%)]" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-[hsl(160,25%,15%)]">正在规划：{planningDest}</h1>
+              <p className="text-sm text-[hsl(160,15%,45%)]">AI正在生成详细行程...</p>
+            </div>
+          </div>
+          {planningLoading ? (
+            <div className="p-12 rounded-2xl bg-white shadow-soft text-center">
+              <div className="relative w-20 h-20 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-full border-4 border-[hsl(160,40%,85%)]" />
+                <div className="absolute inset-0 rounded-full border-4 border-[hsl(160,45%,28%)] border-t-transparent animate-spin" />
+              </div>
+              <p className="text-[hsl(160,15%,45%)]">AI行程规划中...</p>
+            </div>
+          ) : planningError ? (
+            <div className="p-6 rounded-2xl bg-red-50 border border-red-200">
+              <div className="flex items-center gap-2 mb-2 text-red-700 font-semibold">
+                <AlertCircle className="w-5 h-5" />规划失败
+              </div>
+              <p className="text-sm text-red-600 mb-4">{planningError}</p>
+              <Button onClick={() => handleDirectPlan(planningDest)} className="btn-primary">重试</Button>
+            </div>
+          ) : (
+            <div className="p-6 rounded-2xl bg-white shadow-soft">
+              <h3 className="text-lg font-semibold text-[hsl(160,25%,15%)] mb-4">行程规划结果</h3>
+              <pre className="text-sm text-[hsl(160,15%,45%)] whitespace-pre-wrap font-mono bg-[hsl(150,20%,97%)] p-4 rounded-xl max-h-96 overflow-y-auto">{planningResult}</pre>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-nature pt-20 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => onPageChange('home')}
-            className="p-2 rounded-xl hover:bg-white/50 transition-colors"
-          >
+          <button onClick={() => _props.onPageChange('home')} className="p-2 rounded-xl hover:bg-white/50 transition-colors">
             <ArrowLeft className="w-6 h-6 text-[hsl(160,25%,15%)]" />
           </button>
           <div>
@@ -110,112 +138,66 @@ export function ReversePage({ onPageChange }: ReversePageProps) {
 
         {!showResults ? (
           <div className="space-y-6 animate-slide-up">
-            {/* 标语 */}
             <div className="p-8 rounded-3xl bg-gradient-to-br from-[hsl(160,45%,28%)] to-[hsl(180,40%,35%)] text-white text-center">
               <ArrowLeftRight className="w-12 h-12 mx-auto mb-4 opacity-80" />
               <h2 className="text-2xl font-bold mb-2">避开人潮，发现小众宝藏</h2>
-              <p className="text-white/80">
-                AI分析实时热度数据，为你推荐相似体验但人流较少的替代目的地
-              </p>
+              <p className="text-white/80">AI分析实时热度数据，为你推荐相似体验但人流较少的替代目的地</p>
             </div>
 
-            {/* 偏好选择 */}
             <div className="p-6 rounded-2xl bg-white shadow-soft">
               <label className="flex items-center gap-2 text-sm font-medium text-[hsl(160,25%,15%)] mb-4">
-                <Sparkles className="w-4 h-4 text-[hsl(160,45%,28%)]" />
-                你的旅行偏好
+                <Sparkles className="w-4 h-4 text-[hsl(160,45%,28%)]" />你的旅行偏好
               </label>
               <div className="flex flex-wrap gap-2">
                 {preferenceOptions.map(option => (
-                  <button
-                    key={option}
-                    onClick={() => togglePreference(option)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                      preferences.includes(option)
-                        ? 'bg-[hsl(160,45%,28%)] text-white'
-                        : 'bg-[hsl(150,20%,94%)] text-[hsl(160,15%,45%)] hover:bg-[hsl(150,20%,90%)]'
-                    }`}
-                  >
-                    {preferences.includes(option) && <Check className="w-4 h-4 inline mr-1" />}
-                    {option}
+                  <button key={option} onClick={() => togglePreference(option)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${preferences.includes(option) ? 'bg-[hsl(160,45%,28%)] text-white' : 'bg-[hsl(150,20%,94%)] text-[hsl(160,15%,45%)] hover:bg-[hsl(150,20%,90%)]'}`}>
+                    {preferences.includes(option) && <Check className="w-4 h-4 inline mr-1" />}{option}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* 人流容忍度 */}
             <div className="p-6 rounded-2xl bg-white shadow-soft">
               <label className="flex items-center gap-2 text-sm font-medium text-[hsl(160,25%,15%)] mb-4">
-                <Users className="w-4 h-4 text-[hsl(160,45%,28%)]" />
-                人流容忍度
+                <Users className="w-4 h-4 text-[hsl(160,45%,28%)]" />人流容忍度
               </label>
               <div className="flex items-center gap-4">
-                <Slider
-                  value={[crowdTolerance]}
-                  onValueChange={([v]) => setCrowdTolerance(v)}
-                  min={0}
-                  max={100}
-                  step={10}
-                  className="flex-1"
-                />
-                <span className="w-20 text-right font-semibold text-[hsl(160,45%,28%)]">
-                  {crowdTolerance}%
-                </span>
+                <Slider value={[crowdTolerance]} onValueChange={([v]) => setCrowdTolerance(v)} min={0} max={100} step={10} className="flex-1" />
+                <span className="w-20 text-right font-semibold text-[hsl(160,45%,28%)]">{crowdTolerance}%</span>
               </div>
               <div className="flex justify-between mt-2 text-xs text-[hsl(160,15%,45%)]">
-                <span>极度冷门</span>
-                <span>小众宝藏</span>
-                <span>相对舒适</span>
+                <span>极度冷门</span><span>小众宝藏</span><span>相对舒适</span>
               </div>
             </div>
 
-            {/* 搜索按钮 */}
-            <Button
-              onClick={handleSearch}
-              className="w-full btn-primary py-4 text-lg"
-            >
-              <Search className="w-5 h-5 mr-2" />
-              寻找反向目的地
+            <Button onClick={handleSearch} className="w-full btn-primary py-4 text-lg">
+              <Search className="w-5 h-5 mr-2" />寻找反向目的地
             </Button>
           </div>
         ) : (
           <div className="space-y-6 animate-slide-up">
-            {/* 结果标题 */}
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-[hsl(160,25%,15%)]">
-                为你找到的反向目的地
-              </h2>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowResults(false);
-                  setAlternatives([]);
-                }}
-                className="btn-secondary"
-              >
-                重新选择
-              </Button>
+              <h2 className="text-xl font-semibold text-[hsl(160,25%,15%)]">为你找到的反向目的地</h2>
+              <Button variant="outline" onClick={() => { setShowResults(false); setAlternatives([]); setApiError(''); }} className="btn-secondary">重新选择</Button>
             </div>
 
-            {/* 目的地卡片 */}
-            <div className="space-y-4">
-              {(alternatives.length ? alternatives : reverseDestinations).map(
-                (dest) => (
-                <div
-                  key={dest.popular}
-                  className="p-5 rounded-2xl bg-white shadow-soft hover:shadow-float transition-all"
-                >
-                  <div className="flex flex-col sm:flex-row gap-5">
-                    {/* 图片 */}
-                    <div className="sm:w-48 h-32 rounded-xl overflow-hidden flex-shrink-0">
-                      <img
-                        src={dest.image}
-                        alt={dest.alternative}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+            {apiError && (
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-amber-800">AI 服务暂时不可用，当前显示示例数据</p>
+                  <p className="text-xs text-amber-600">错误详情：{apiError}</p>
+                </div>
+              </div>
+            )}
 
-                    {/* 内容 */}
+            <div className="space-y-4">
+              {(alternatives.length ? alternatives : reverseDestinations).map(dest => (
+                <div key={dest.popular} className="p-5 rounded-2xl bg-white shadow-soft hover:shadow-float transition-all">
+                  <div className="flex flex-col sm:flex-row gap-5">
+                    <div className="sm:w-48 h-32 rounded-xl overflow-hidden flex-shrink-0">
+                      <img src={dest.image} alt={dest.alternative} className="w-full h-full object-cover" />
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div>
@@ -227,41 +209,27 @@ export function ReversePage({ onPageChange }: ReversePageProps) {
                           </div>
                           <p className="text-sm text-[hsl(160,15%,45%)]">{dest.reason}</p>
                         </div>
-                        
-                        {/* 反向指数 */}
                         <div className="text-center">
-                          <div className={`w-12 h-12 rounded-full ${getReverseIndexColor(dest.reverseIndex)} flex items-center justify-center text-white font-bold`}>
-                            {dest.reverseIndex}
-                          </div>
-                          <span className="text-xs text-[hsl(160,15%,45%)] mt-1 block">
-                            {getReverseIndexLabel(dest.reverseIndex)}
-                          </span>
+                          <div className={`w-12 h-12 rounded-full ${getReverseIndexColor(dest.reverseIndex)} flex items-center justify-center text-white font-bold`}>{dest.reverseIndex}</div>
+                          <span className="text-xs text-[hsl(160,15%,45%)] mt-1 block">{getReverseIndexLabel(dest.reverseIndex)}</span>
                         </div>
                       </div>
-
-                      {/* 亮点 */}
-                      <div className="flex flex-wrap gap-2">
-                        {dest.highlights.map(highlight => (
-                          <span
-                            key={highlight}
-                            className="px-3 py-1 rounded-full text-xs font-medium bg-[hsl(150,20%,94%)] text-[hsl(160,25%,15%)]"
-                          >
-                            {highlight}
-                          </span>
-                        ))}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {dest.highlights.map(h => <span key={h} className="px-3 py-1 rounded-full text-xs font-medium bg-[hsl(150,20%,94%)] text-[hsl(160,25%,15%)]">{h}</span>)}
                       </div>
+                      {/* 直接规划按钮 - Phase C */}
+                      <Button onClick={() => handleDirectPlan(dest.alternative)} className="btn-primary">
+                        <Sparkles className="w-4 h-4 mr-2" />直接规划行程
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
                     </div>
                   </div>
                 </div>
-                ),
-              )}
+              ))}
             </div>
 
-            {/* 数据来源说明 */}
             <div className="p-4 rounded-xl bg-[hsl(150,20%,97%)] text-center">
-              <p className="text-sm text-[hsl(160,15%,45%)]">
-                数据来源：小红书实时热度、机票价格波动、酒店库存、景点预约情况
-              </p>
+              <p className="text-sm text-[hsl(160,15%,45%)]">数据来源：小红书实时热度、机票价格波动、酒店库存、景点预约情况</p>
             </div>
           </div>
         )}

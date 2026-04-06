@@ -4,10 +4,8 @@ import { HomePage } from '@/pages/HomePage';
 import { RecommendPage } from '@/pages/RecommendPage';
 import { PlannerPage } from '@/pages/PlannerPage';
 import { GamesPage } from '@/pages/GamesPage';
-import { ColorWalkPage } from '@/pages/ColorWalkPage';
 import { BlindBoxPage } from '@/pages/BlindBoxPage';
 import { DicePage } from '@/pages/DicePage';
-import { PhotoChallengePage } from '@/pages/PhotoChallengePage';
 import { PuzzlePage } from '@/pages/PuzzlePage';
 import { ReversePage } from '@/pages/ReversePage';
 import { FavoritesPage } from '@/pages/FavoritesPage';
@@ -26,14 +24,10 @@ export default function App() {
         return <PlannerPage onPageChange={setCurrentPage} />;
       case 'games':
         return <GamesPage onPageChange={setCurrentPage} />;
-      case 'color-walk':
-        return <ColorWalkPage onPageChange={setCurrentPage} />;
       case 'blind-box':
         return <BlindBoxPage onPageChange={setCurrentPage} />;
       case 'dice':
         return <DicePage onPageChange={setCurrentPage} />;
-      case 'photo-challenge':
-        return <PhotoChallengePage onPageChange={setCurrentPage} />;
       case 'puzzle':
         return <PuzzlePage onPageChange={setCurrentPage} />;
       case 'reverse':

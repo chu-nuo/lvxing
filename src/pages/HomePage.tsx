@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Compass, MapPin, Sparkles, ArrowRight, Palette, Box, Dices, Camera, Puzzle, ArrowLeftRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Compass, MapPin, Sparkles, ArrowRight, Box, Dices, Puzzle, ArrowLeftRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface HomePageProps {
@@ -8,6 +8,7 @@ interface HomePageProps {
 
 export function HomePage({ onPageChange }: HomePageProps) {
   const heroRef = useRef<HTMLDivElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -20,7 +21,15 @@ export function HomePage({ onPageChange }: HomePageProps) {
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', (e) => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        setMousePos({
+          x: (e.clientX - rect.left) / rect.width,
+          y: (e.clientY - rect.top) / rect.height,
+        });
+      }
+    });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
@@ -42,10 +51,8 @@ export function HomePage({ onPageChange }: HomePageProps) {
   ];
 
   const games = [
-    { icon: Palette, title: '色彩漫步', desc: '用颜色记录旅行', color: 'bg-rose-100 text-rose-600' },
     { icon: Box, title: '盲盒旅行', desc: '未知目的地冒险', color: 'bg-amber-100 text-amber-600' },
     { icon: Dices, title: '骰子旅行', desc: '随机决定行程', color: 'bg-violet-100 text-violet-600' },
-    { icon: Camera, title: '摄影挑战', desc: 'AI评分你的作品', color: 'bg-cyan-100 text-cyan-600' },
     { icon: Puzzle, title: '足迹拼图', desc: '解锁中国地图', color: 'bg-emerald-100 text-emerald-600' },
     { icon: ArrowLeftRight, title: '反向旅行', desc: '避开人潮小众游', color: 'bg-indigo-100 text-indigo-600' },
   ];
@@ -57,7 +64,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero"
         style={{
-          background: `radial-gradient(ellipse at ${parseFloat(heroRef.current?.style.getPropertyValue('--mouse-x') || '0.5') * 100}% ${parseFloat(heroRef.current?.style.getPropertyValue('--mouse-y') || '0.5') * 100}%, hsl(150 40% 92%), hsl(160 30% 96%), hsl(45 30% 97%))`,
+          background: `radial-gradient(ellipse at ${mousePos.x * 100}% ${mousePos.y * 100}%, hsl(150 40% 92%), hsl(160 30% 96%), hsl(45 30% 97%))`,
         }}
       >
         {/* 装饰元素 */}
@@ -192,10 +199,8 @@ export function HomePage({ onPageChange }: HomePageProps) {
                   key={game.title}
                   onClick={() => {
                     if (game.title === '反向旅行') onPageChange('reverse');
-                    else if (game.title === '色彩漫步') onPageChange('color-walk');
                     else if (game.title === '盲盒旅行') onPageChange('blind-box');
                     else if (game.title === '骰子旅行') onPageChange('dice');
-                    else if (game.title === '摄影挑战') onPageChange('photo-challenge');
                     else if (game.title === '足迹拼图') onPageChange('puzzle');
                     else onPageChange('games');
                   }}

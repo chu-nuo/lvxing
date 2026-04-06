@@ -1,19 +1,10 @@
-import { Palette, Box, Dices, Camera, Puzzle, ArrowRight, Sparkles, Trophy } from 'lucide-react';
+import { Box, Dices, Puzzle, ArrowRight, Sparkles } from 'lucide-react';
 
 interface GamesPageProps {
   onPageChange: (page: string) => void;
 }
 
 const games = [
-  {
-    id: 'color-walk',
-    title: '色彩漫步',
-    description: '用颜色记录旅行，生成专属色彩相册',
-    icon: Palette,
-    color: 'from-rose-400 to-pink-500',
-    bgColor: 'bg-rose-50',
-    features: ['随机色彩挑战', '渐变色挑战', '互补色对决'],
-  },
   {
     id: 'blind-box',
     title: '盲盒旅行',
@@ -33,22 +24,13 @@ const games = [
     features: ['六大维度', '随机任务', 'Vlog脚本'],
   },
   {
-    id: 'photo-challenge',
-    title: '摄影挑战',
-    description: 'AI评分你的旅行摄影作品',
-    icon: Camera,
-    color: 'from-cyan-400 to-blue-500',
-    bgColor: 'bg-cyan-50',
-    features: ['景点任务', 'AI评分', '作品集'],
-  },
-  {
     id: 'puzzle',
     title: '足迹拼图',
     description: '解锁中国地图，收集区域徽章',
     icon: Puzzle,
     color: 'from-emerald-400 to-teal-500',
     bgColor: 'bg-emerald-50',
-    features: ['区域解锁', '好友排行', '终极徽章'],
+    features: ['区域解锁', '地图联动', '点亮省份'],
   },
 ];
 
@@ -118,26 +100,6 @@ export function GamesPage({ onPageChange }: GamesPageProps) {
           })}
         </div>
 
-        {/* 成就展示 */}
-        <div className="mt-16 p-8 rounded-3xl bg-gradient-to-br from-[hsl(160,45%,28%)] to-[hsl(180,40%,35%)] text-white">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">收集徽章，成为旅行大师</h2>
-              <p className="text-white/80">
-                完成游戏挑战，解锁专属徽章，展示你的旅行成就
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <Trophy className="w-8 h-8" />
-              </div>
-              <div>
-                <div className="text-3xl font-bold">12</div>
-                <div className="text-sm text-white/70">已解锁徽章</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

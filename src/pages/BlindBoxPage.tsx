@@ -153,7 +153,7 @@ export function BlindBoxPage({ onPageChange }: BlindBoxPageProps) {
                 className="btn-primary flex-1"
                 disabled={cluesLoading}
               >
-                支付定金
+                下一步
                 <ChevronRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
@@ -302,9 +302,6 @@ export function BlindBoxPage({ onPageChange }: BlindBoxPageProps) {
                 <Sparkles className="w-5 h-5 text-amber-600" />
                 <span className="font-semibold text-amber-800">解锁奖励</span>
               </div>
-              <p className="text-amber-700">
-                获得「盲盒旅行者」徽章 + 专属折扣码
-              </p>
             </div>
           </div>
         );
