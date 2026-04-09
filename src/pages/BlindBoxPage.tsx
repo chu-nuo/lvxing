@@ -286,7 +286,7 @@ export function BlindBoxPage({ onPageChange }: BlindBoxPageProps) {
                 }}
                 className="btn-primary flex-1"
               >
-                生成行程
+                下一步
               </Button>
               <Button
                 variant="outline"
@@ -294,14 +294,6 @@ export function BlindBoxPage({ onPageChange }: BlindBoxPageProps) {
               >
                 <Share2 className="w-5 h-5" />
               </Button>
-            </div>
-
-            {/* 解锁奖励 */}
-            <div className="mt-8 p-6 rounded-2xl bg-amber-50 border border-amber-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-5 h-5 text-amber-600" />
-                <span className="font-semibold text-amber-800">解锁奖励</span>
-              </div>
             </div>
           </div>
         );

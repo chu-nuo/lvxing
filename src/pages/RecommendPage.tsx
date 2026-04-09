@@ -10,12 +10,6 @@ interface RecommendPageProps {
   onPageChange: (page: string) => void;
 }
 
-const mockDestinations: Destination[] = [
-  { id: '1', name: '大理', image: 'https://images.unsplash.com/photo-1527684651001-731c474bbb5a?w=800&q=80', tagline: '在洱海边等一场不需要滤镜的日落', budget: 3500, days: 4, weather: { temp: 22, condition: 'sunny' }, crowdLevel: 'moderate', matchScore: 95, highlights: ['洱海骑行', '古城漫步', '苍山索道'] },
-  { id: '2', name: '丽江', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80', tagline: '雪山下的慢时光，让心灵找到归属', budget: 4200, days: 5, weather: { temp: 18, condition: 'cloudy' }, crowdLevel: 'hot', matchScore: 88, highlights: ['玉龙雪山', '束河古镇', '纳西文化'] },
-  { id: '3', name: '西双版纳', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80', tagline: '热带雨林里的异域风情', budget: 2800, days: 4, weather: { temp: 28, condition: 'sunny' }, crowdLevel: 'cold', matchScore: 82, highlights: ['傣族园', '野象谷', '热带植物园'] },
-];
-
 const transportOptions = ['飞机', '高铁', '自驾', '公共交通', '混合'];
 const preferenceOptions = ['打卡', '美食', '人文', '风景', '购物', '探险', '休闲'];
 const moodOptions = [
@@ -48,7 +42,7 @@ export function RecommendPage(_props: RecommendPageProps) {
   const [compareMode, setCompareMode] = useState(false);
 
   const getDestKey = (d: Destination) => d.id ?? d.name;
-  const renderDestinations = destinations.length ? destinations : mockDestinations;
+  const renderDestinations = destinations;
 
   const handleSubmit = async () => {
     setStep('loading');

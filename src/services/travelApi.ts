@@ -11,10 +11,12 @@ type ApiResponse<T> = {
 
 // 支持开发环境 localhost 和生产环境自定义域名
 // Vite 会自动用 VITE_API_BASE_URL 替换变量（注意 Vercel 部署时需在环境变量中配置）
-const baseUrl: string = (import.meta as any).env?.VITE_API_BASE_URL ?? "";
+const baseUrl: string = (import.meta as any).env?.VITE_API_BASE_URL ?? "/api";
 
 async function apiPost<T>(path: string, body: unknown): Promise<T> {
-  const url = `${baseUrl}${path}`;
+  // 规范化路径：确保 baseUrl 和 path 之间没有重复的 /api
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const url = `${baseUrl}${normalizedPath}`;
 
   const resp = await fetch(url, {
     method: "POST",
@@ -46,7 +48,7 @@ export type RecommendRequest = {
 };
 
 export async function recommend(payload: RecommendRequest) {
-  return apiPost<any>("/api/recommend", payload);
+  return apiPost<any>("/recommend", payload);
 }
 
 export type PlannerRequest = {
@@ -60,7 +62,7 @@ export type PlannerRequest = {
 };
 
 export async function planner(payload: PlannerRequest) {
-  return apiPost<any>("/api/planner", payload);
+  return apiPost<any>("/planner", payload);
 }
 
 export type ReverseRequest = {
@@ -71,7 +73,7 @@ export type ReverseRequest = {
 };
 
 export async function reverse(payload: ReverseRequest) {
-  return apiPost<any>("/api/reverse", payload);
+  return apiPost<any>("/reverse", payload);
 }
 
 export async function diceVlogScript(input: {
@@ -80,7 +82,7 @@ export async function diceVlogScript(input: {
   dice: Record<string, string>;
   travelDate?: string;
 }) {
-  return apiPost<any>("/api/dice/vlog-script", input);
+  return apiPost<any>("/dice/vlog-script", input);
 }
 
 export async function blindboxRecommend(input: {
@@ -90,7 +92,7 @@ export async function blindboxRecommend(input: {
   preferences?: string[];
   reveal?: boolean;
 }) {
-  return apiPost<any>("/api/blindbox/recommend", input);
+  return apiPost<any>("/blindbox/recommend", input);
 }
 
 export async function photochallengePlan(input: {
@@ -99,6 +101,6 @@ export async function photochallengePlan(input: {
   travelDate?: string;
   peopleCount?: number;
 }) {
-  return apiPost<any>("/api/photochallenge/plan", input);
+  return apiPost<any>("/photochallenge/plan", input);
 }
 

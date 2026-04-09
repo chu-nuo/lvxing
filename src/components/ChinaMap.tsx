@@ -19,7 +19,7 @@ const provinces: { id: string; name: string; path: string }[] = [
   { id: 'shandong', name: '山东', path: 'M560,300 L600,300 L620,340 L600,380 L560,370 L540,340 Z' },
   // 西北
   { id: 'shaanxi', name: '陕西', path: 'M420,220 L460,200 L480,260 L460,300 L420,290 L400,260 Z' },
-  { id: ' Gansu', name: '甘肃', path: 'M240,160 L340,140 L420,220 L400,260 L340,260 L280,240 L220,200 Z' },
+  { id: 'gansu', name: '甘肃', path: 'M240,160 L340,140 L420,220 L400,260 L340,260 L280,240 L220,200 Z' },
   { id: 'qinghai', name: '青海', path: 'M200,220 L280,200 L340,260 L320,320 L240,320 L180,280 Z' },
   { id: 'ningxia', name: '宁夏', path: 'M400,260 L420,255 L425,270 L410,280 L395,270 Z' },
   { id: 'xinjiang', name: '新疆', path: 'M60,80 L220,40 L280,120 L260,200 L180,220 L100,180 L40,120 Z' },

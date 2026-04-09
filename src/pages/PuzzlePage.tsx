@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, MapPin, Share2, Lock, Unlock, Star } from 'lucide-react';
+import { ArrowLeft, MapPin, Share2, Lock, Unlock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ChinaMap } from '@/components/ChinaMap';
 
@@ -15,6 +15,19 @@ const regions = [
   { id: 'central', name: '中原古韵', cities: ['西安', '洛阳', '开封', '郑州'], unlocked: true, progress: 1, total: 4, color: 'from-rose-400 to-pink-500', provinces: ['shaanxi', 'shanxi', 'henan', 'hubei'] },
   { id: 'coastal', name: '沿海风情', cities: ['厦门', '青岛', '三亚', '大连'], unlocked: false, progress: 0, total: 4, color: 'from-sky-400 to-blue-500', provinces: ['fujian', 'shandong', 'guangdong', 'hainan'] },
 ];
+
+// 省份ID到中文名称的映射
+const PROVINCE_NAME_MAP: Record<string, string> = {
+  zhejiang: '浙江', shanghai: '上海', jiangsu: '江苏', anhui: '安徽',
+  yunnan: '云南', guizhou: '贵州', sichuan: '四川', xizang: '西藏',
+  gansu: '甘肃', qinghai: '青海', xinjiang: '新疆', ningxia: '宁夏',
+  heilongjiang: '黑龙江', jilin: '吉林', liaoning: '辽宁',
+  shaanxi: '陕西', shanxi: '山西', henan: '河南', hubei: '湖北',
+  fujian: '福建', shandong: '山东', guangdong: '广东', hainan: '海南',
+  hunan: '湖南', guangxi: '广西', chongqing: '重庆', beijing: '北京',
+  tianjin: '天津', hebei: '河北', jiangxi: '江西', neimenggu: '内蒙古',
+  xianggang: '香港', aomen: '澳门', taiwan: '台湾'
+};
 
 // 所有省份集合（初始全部锁定）
 const ALL_PROVINCES = regions.flatMap(r => r.provinces);
@@ -41,6 +54,17 @@ export function PuzzlePage({ onPageChange }: PuzzlePageProps) {
       }
       return next;
     });
+    // 双根据联动：点击省份自动选中对应区域
+    const region = regions.find(r => r.provinces.includes(provinceId));
+    if (region) {
+      setSelectedRegion(region);
+    }
+  };
+
+  const handleRegionClick = (region: typeof regions[0]) => {
+    setSelectedRegion(region);
+    // 双向联动：点击区域高亮其所有省份
+    setSelectedProvince(region.provinces[0] ?? null);
   };
 
   return (
@@ -87,7 +111,7 @@ export function PuzzlePage({ onPageChange }: PuzzlePageProps) {
             {regions.map((region) => (
               <div
                 key={region.id}
-                onClick={() => setSelectedRegion(region)}
+                onClick={() => handleRegionClick(region)}
                 className={`p-5 rounded-2xl bg-white shadow-soft transition-all ${region.unlocked ? 'hover:shadow-float cursor-pointer' : 'opacity-60'}`}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -113,18 +137,32 @@ export function PuzzlePage({ onPageChange }: PuzzlePageProps) {
               <button onClick={() => setSelectedRegion(null)} className="p-2 rounded-xl hover:bg-[hsl(150,20%,94%)] transition-colors">
                 <ArrowLeft className="w-5 h-5 text-[hsl(160,25%,15%)]" />
               </button>
-              <h2 className="text-xl font-bold text-[hsl(160,25%,15%)]">{selectedRegion.name}</h2>
+              <div>
+                <h2 className="text-xl font-bold text-[hsl(160,25%,15%)]">{selectedRegion.name}</h2>
+                <p className="text-sm text-[hsl(160,15%,45%)]">点击省份切换点亮状态</p>
+              </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {selectedRegion.cities.map((city, index) => (
-                <div
-                  key={city}
-                  className={`p-4 rounded-xl text-center ${index < selectedRegion.progress ? 'bg-gradient-to-br ' + selectedRegion.color + ' text-white' : 'bg-[hsl(150,20%,97%)] text-[hsl(160,15%,45%)]'}`}
-                >
-                  {index < selectedRegion.progress ? <Star className="w-5 h-5 mx-auto mb-2" /> : <Lock className="w-5 h-5 mx-auto mb-2" />}
-                  <span className="font-medium">{city}</span>
-                </div>
-              ))}
+            {/* 省份列表 - 可点击切换点亮 */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {selectedRegion.provinces.map((provinceId) => {
+                const isUnlocked = unlockedProvinces.has(provinceId);
+                // 从映射表获取中文省份名称
+                const provinceName = PROVINCE_NAME_MAP[provinceId] || provinceId;
+                return (
+                  <button
+                    key={provinceId}
+                    onClick={() => handleProvinceClick(provinceId)}
+                    className={`p-4 rounded-xl text-center transition-all duration-200 ${
+                      isUnlocked 
+                        ? `bg-gradient-to-br ${selectedRegion.color} text-white shadow-md` 
+                        : 'bg-[hsl(150,20%,97%)] text-[hsl(160,15%,45%)] hover:bg-[hsl(150,20%,94%)]'
+                    }`}
+                  >
+                    {isUnlocked ? <Unlock className="w-5 h-5 mx-auto mb-2" /> : <Lock className="w-5 h-5 mx-auto mb-2" />}
+                    <span className="font-medium text-sm">{provinceName}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

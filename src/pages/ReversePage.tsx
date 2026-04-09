@@ -192,7 +192,7 @@ export function ReversePage(_props: ReversePageProps) {
             )}
 
             <div className="space-y-4">
-              {(alternatives.length ? alternatives : reverseDestinations).map(dest => (
+              {alternatives.map(dest => (
                 <div key={dest.popular} className="p-5 rounded-2xl bg-white shadow-soft hover:shadow-float transition-all">
                   <div className="flex flex-col sm:flex-row gap-5">
                     <div className="sm:w-48 h-32 rounded-xl overflow-hidden flex-shrink-0">

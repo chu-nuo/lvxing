@@ -26,7 +26,7 @@ const games = [
   {
     id: 'puzzle',
     title: '足迹拼图',
-    description: '解锁中国地图，收集区域徽章',
+    description: '点亮中国地图，记录旅行足迹',
     icon: Puzzle,
     color: 'from-emerald-400 to-teal-500',
     bgColor: 'bg-emerald-50',
