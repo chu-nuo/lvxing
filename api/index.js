@@ -11,5 +11,13 @@ const app = createApp();
 
 // Vercel Serverless Function handler
 module.exports = async function handler(req, res) {
+  // Vercel 的 rewrite 规则将 /api/* 转发到这里
+  // 但 Express 内部路由期望不带 /api 前缀
+  // 所以需要去掉 /api 前缀
+  if (req.url.startsWith('/api/')) {
+    req.url = req.url.slice(4); // 去掉 '/api' 前缀
+  } else if (req.url === '/api') {
+    req.url = '/';
+  }
   return app(req, res);
 }
