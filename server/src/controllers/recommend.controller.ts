@@ -1,11 +1,13 @@
 import type { Request, Response } from "express";
-import { deepseekClient } from "../services/llm/deepseekProvider";
+import { getDeepSeekClientFromRequest } from "../services/llm/deepseekProvider";
 import { RecommendService } from "../services/orchestration/RecommendService";
-
-const service = new RecommendService(deepseekClient as any);
 
 export async function recommend(req: Request, res: Response) {
   const body = req.body ?? {};
+  
+  // 使用请求头中的 API Key（如果用户提供了）
+  const deepseekClient = getDeepSeekClientFromRequest(req);
+  const service = new RecommendService(deepseekClient as any);
 
   const result = await service.recommend({
     origin: String(body.origin ?? body.location ?? ""),

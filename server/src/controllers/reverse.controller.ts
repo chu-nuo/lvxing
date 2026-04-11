@@ -1,11 +1,13 @@
 import type { Request, Response } from "express";
-import { deepseekClient } from "../services/llm/deepseekProvider";
+import { getDeepSeekClientFromRequest } from "../services/llm/deepseekProvider";
 import { ReverseService } from "../services/orchestration/ReverseService";
-
-const service = new ReverseService(deepseekClient as any);
 
 export async function reverse(req: Request, res: Response) {
   const body = req.body ?? {};
+  
+  // 使用请求头中的 API Key（如果用户提供了）
+  const deepseekClient = getDeepSeekClientFromRequest(req);
+  const service = new ReverseService(deepseekClient as any);
 
   const result = await service.reverse({
     preferences: Array.isArray(body.preferences) ? body.preferences.map(String) : [],

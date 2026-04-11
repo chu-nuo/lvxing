@@ -117,6 +117,13 @@ export class DeepSeekClient {
   }
 }
 
+// 新增：支持动态创建客户端（用户提供的 API Key）
+export function createDeepSeekClient(apiKey: string, baseUrl?: string): DeepSeekClient {
+  const url = baseUrl ?? process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com";
+  return new DeepSeekClient({ apiKey, baseUrl: url });
+}
+
+// 保留：从环境变量创建（向后兼容）
 export function createDeepSeekClientFromEnv() {
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
@@ -127,4 +134,3 @@ export function createDeepSeekClientFromEnv() {
   const baseUrl = process.env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com";
   return new DeepSeekClient({ apiKey, baseUrl });
 }
-
