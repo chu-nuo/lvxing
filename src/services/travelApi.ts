@@ -1,3 +1,5 @@
+import { getStoredApiKey } from '@/components/SettingsPanel';
+
 type ApiResponse<T> = {
   ok: boolean;
   requestId?: string;
@@ -13,14 +15,30 @@ type ApiResponse<T> = {
 // Vite 会自动用 VITE_API_BASE_URL 替换变量（注意 Vercel 部署时需在环境变量中配置）
 const baseUrl: string = (import.meta as any).env?.VITE_API_BASE_URL ?? "/api";
 
+export function getApiKey(): string | null {
+  return getStoredApiKey();
+}
+
 async function apiPost<T>(path: string, body: unknown): Promise<T> {
   // 规范化路径：确保 baseUrl 和 path 之间没有重复的 /api
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const url = `${baseUrl}${normalizedPath}`;
 
+  // 从 localStorage 获取 API Key
+  const apiKey = getStoredApiKey();
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  // 如果存在 API Key，添加到请求头
+  if (apiKey) {
+    headers["x-deepseek-api-key"] = apiKey;
+  }
+
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(body ?? {}),
   });
 

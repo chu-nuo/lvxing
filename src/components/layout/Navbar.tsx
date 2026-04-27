@@ -3,6 +3,7 @@ import { MapPin, Compass, Palette, ArrowLeftRight, Menu, X, User, Heart } from '
 import { Button } from '@/components/ui/button';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { useAuth } from '@/hooks/useAuth';
+import { SettingsPanel } from '@/components/SettingsPanel';
 
 interface NavbarProps {
   currentPage: string;
@@ -90,6 +91,7 @@ export function Navbar({ currentPage, onPageChange }: NavbarProps) {
                 <Heart className="w-5 h-5" />
               </Button>
             )}
+            <SettingsPanel />
             <Button
               variant="ghost"
               size="icon"
@@ -156,6 +158,13 @@ export function Navbar({ currentPage, onPageChange }: NavbarProps) {
               </Button>
               
               <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[hsl(150,15%,88%)]">
+                <SettingsPanel 
+                  trigger={
+                    <Button variant="outline" className="flex-1">
+                      设置
+                    </Button>
+                  }
+                />
                 <Button
                   variant="outline"
                   className="flex-1"
